@@ -21,6 +21,7 @@ def get_params(request):
 def get_generator(request):
     """Returns the generator g as a string"""
     g_string = KEY_MANAGER.get_g()
+    print("sending g: ", KEY_MANAGER.g)
     return(HttpResponse(g_string))
 
 def add_key(request):
@@ -60,7 +61,7 @@ def search(request):
         with open(MEDIA_ROOT + file_to_test, "r") as file_in:
             ciphertext_dict = json.load(file_in)
             # Test(_A: Element, _B: List[Element], _C: List[Element], T: List[Union[int, Element]], j: int, genkey: KeyManager):
-            test_result = Test(ciphertext_dict["A"], ciphertext_dict["B"], ciphertext_dict["C"], trapdoor_list, 0, KEY_MANAGER)
+            test_result = Test(ciphertext_dict["A"], ciphertext_dict["B"], ciphertext_dict["C"], trapdoor_list, user_id, KEY_MANAGER)
             print(file_to_test, test_result)
             if test_result:
                 list_results.append(file_to_test)
