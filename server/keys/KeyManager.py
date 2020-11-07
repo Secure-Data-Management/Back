@@ -18,7 +18,7 @@ class KeyManager():
         self.g : Element = Element(self.pairing, G1, value=string_g)
         self.e: Callable[[Element, Element], Element] = lambda e1, e2: self.pairing.apply(e1, e2)
         # public key list
-        self.public_keys : List(Element) = []
+        self.public_keys : List[Element] = []
 
     def add_key(self, key_string):
         """Takes a key as a string and adds it to the keys"""

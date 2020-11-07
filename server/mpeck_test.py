@@ -6,14 +6,14 @@ from typing import List, Union
 
 def Test(_A, _B, _C, T, j, genkey: KeyManager):
     #  S = [A, B, C]
-    #convert A, B, C and T[:3] to Elements
-    A = Element(genkey.pairing, G1, value= _A)  # g^r
-    B = [Element(genkey.pairing, G1, value= el) for el in _B]  # pk^s
-    C = [Element(genkey.pairing, G1, value= el) for el in _C]  # l total crypted keywords (h^r)(f^s)
+    # convert A, B, C and T[:3] to Elements
+    A = Element(genkey.pairing, G1, value=_A)  # g^r
+    B = [Element(genkey.pairing, G1, value=el) for el in _B]  # pk^s
+    C = [Element(genkey.pairing, G1, value=el) for el in _C]  # l total crypted keywords (h^r)(f^s)
     for i in range(3):
-        T[i] = Element(genkey.pairing, G1, value= T[i])
-    print("A=",A)
-    print("B=",B[j])
+        T[i] = Element(genkey.pairing, G1, value=T[i])
+    print("A=", A)
+    print("B=", B[j])
     print("C=", C)
     print("T=", T)
     I: List[int] = T[3:]  # m indexes of keywords from the query

@@ -2,7 +2,7 @@ from django.urls import path
 from server import views
 
 
-app_name = 'frontend'
+app_name = 'backend'
 urlpatterns = [
     path('', views.home, name='home'),
     path('keys/get_params', views.get_params, name='get_params'),

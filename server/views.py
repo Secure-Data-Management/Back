@@ -16,13 +16,15 @@ def home(request):
 # Views for /keys/
 def get_params(request):
     params_string = KEY_MANAGER.get_parameters()
-    return(HttpResponse(params_string))
+    return (HttpResponse(params_string))
+
 
 def get_generator(request):
     """Returns the generator g as a string"""
     g_string = KEY_MANAGER.get_g()
     print("sending g: ", KEY_MANAGER.g)
-    return(HttpResponse(g_string))
+    return HttpResponse(g_string)
+
 
 def add_key(request):
     """Receives the key as a get parameter (?key=...) and adds it to the KeyManager"""
@@ -30,7 +32,8 @@ def add_key(request):
     if new_key != "":
         print(f"Received key: {new_key}")
         user_id = KEY_MANAGER.add_key(new_key)
-        return(HttpResponse(str(user_id)))
+        return HttpResponse(str(user_id))
+
 
 # Views for /file/
 @csrf_exempt
@@ -41,11 +44,12 @@ def upload(request):
 
     n_files = len(os.listdir(MEDIA_ROOT))
     print(f"There are {n_files} on the server")
-    new_filename = f"{MEDIA_ROOT}file_{n_files+1}.json"
+    new_filename = f"{MEDIA_ROOT}file_{n_files + 1}.json"
     with open(new_filename, 'w') as outfile:
         json.dump(message_dict, outfile)
 
     return HttpResponse("File uploaded !")
+
 
 @csrf_exempt
 def search(request):
@@ -65,4 +69,4 @@ def search(request):
             print(file_to_test, test_result)
             if test_result:
                 list_results.append(file_to_test)
-    return(HttpResponse(str(list_results)))
+    return HttpResponse(str(list_results))
