@@ -1,10 +1,6 @@
 from typing import Union, Tuple, List, Callable, Any
-import hashlib
-import sys
-import os
-# sys.path.append((os.path.dirname(os.path.abspath(__file__))))
-# from crypto.bn256 import *
-from pypbc import Parameters, Pairing, Element, G1, G2, GT
+
+from pypbc import Parameters, Pairing, Element, G1, G2
 
 
 class KeyManager():
@@ -22,7 +18,7 @@ class KeyManager():
 
     def add_key(self, key_string):
         """Takes a key as a string and adds it to the keys"""
-        key_element = Element(self.pairing, G2, value=key_string)
+        key_element = Element(self.pairing, G1, value=key_string)
         self.public_keys.append(key_element)
         return len(self.public_keys) - 1
 
