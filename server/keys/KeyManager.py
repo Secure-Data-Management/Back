@@ -1,4 +1,4 @@
-from typing import Union, Tuple, List, Callable, Any
+from typing import Union, Tuple, List, Callable, Any, Dict
 
 from pypbc import Parameters, Pairing, Element, G1, G2
 
@@ -13,19 +13,21 @@ class KeyManager():
         string_g = "03138C4D4FFBF34E2338783FF4968933C015AC8F34496A4BE5697D5C4BDE9F78B3E21306F3B4938C40571C9B9EDDE050DB8CE526FF1B8099E8DE790A8962E9443E"
         self.g : Element = Element(self.pairing, G1, value=string_g)
         self.e: Callable[[Element, Element], Element] = lambda e1, e2: self.pairing.apply(e1, e2)
-        # public key list
-        self.public_keys : List[Element] = []
+        # public key dict
+        self.public_keys : Dict[Element] = {}
 
-    def add_key(self, key_string):
-        """Takes a key as a string and adds it to the keys"""
+        #TODO: create consultant key in the KeyManager itself?
+
+    def add_key(self, key_string, username):
+        """Takes a key as a string and a username and adds it to the keys"""
         key_element = Element(self.pairing, G1, value=key_string)
-        self.public_keys.append(key_element)
+        self.public_keys[username] = key_element
         return len(self.public_keys) - 1
 
-    def get_key(self, user_id):
-        """Returns the key of user with id user_id as a string"""
+    def get_key(self, user_name):
+        """Returns the key of user with name=username as a string"""
         assert user_id >= 0 and user_id < len(self.public_keys), f"Invalid id in get_key {user_id}"
-        return str(self.public_keys[user_id])
+        return str(self.public_keys[user_name])
 
     def get_parameters(self):
         """Returns the parameters as a string"""

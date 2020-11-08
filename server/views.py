@@ -27,13 +27,33 @@ def get_generator(request):
 
 
 def add_key(request):
-    """Receives the key as a get parameter (?key=...) and adds it to the KeyManager"""
+    """Receives the key as a get parameter (?key=...) and a username (?user=...) and adds it to the KeyManager"""
     new_key = request.GET.get("key", "")
-    if new_key != "":
-        print(f"Received key: {new_key}")
-        user_id = KEY_MANAGER.add_key(new_key)
-        return HttpResponse(str(user_id))
+    username = request.GET.get("user", "")
+    if new_key == "":
+        return HttpResponse("No key sent")
+    else:
+        if username == "":
+            n_users = len(KEY_MANAGER.public_keys)
+            username = f"user_{n_users}"
+        print(f"Received key: {new_key}, from user={username}")
+        if username in KEY_MANAGER.public_keys:
+            return HttpResponse("User already exists !")
+        else:
+            user_id = KEY_MANAGER.add_key(new_key, username)
+            return HttpResponse(str(user_id))
 
+def get_key(request):
+    """Receives a username in get paramater and returns his public key (if user exists)"""
+    username = request.GET.get("user", "")
+    if username == "":
+        return HttpResponse("No user specified")
+    else:
+        if username not in KEY_MANAGER.public_keys:
+            return HttpResponse("This user does not exist")
+        else:
+            key_string = KEY_MANAGER.get_key(username)
+            return HttpResponse(key_string)
 
 # Views for /file/
 @csrf_exempt
@@ -68,5 +88,6 @@ def search(request):
             test_result = Test(ciphertext_dict["A"], ciphertext_dict["B"], ciphertext_dict["C"], trapdoor_list, user_id, KEY_MANAGER)
             print(file_to_test, test_result)
             if test_result:
-                list_results.append(file_to_test)
+                # add the ciphertext to the list that should be sent back
+                list_results.append(ciphertext_dict["E"])
     return HttpResponse(str(list_results))

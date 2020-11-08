@@ -12,10 +12,6 @@ def Test(_A, _B, _C, T, j, genkey: KeyManager):
     C = [Element(genkey.pairing, G1, value=el) for el in _C]  # l total crypted keywords (h^r)(f^s)
     for i in range(3):
         T[i] = Element(genkey.pairing, G1, value=T[i])
-    print("A=", A)
-    print("B=", B[j])
-    print("C=", C)
-    print("T=", T)
     I: List[int] = T[3:]  # m indexes of keywords from the query
     # Intermediate computation
     keywords_product: Element = Element.one(genkey.pairing, G1)
@@ -25,9 +21,7 @@ def Test(_A, _B, _C, T, j, genkey: KeyManager):
     G3: Element = genkey.e(A, T[1])
     G2: Element = genkey.e(B[j], T[2])
     E2: Element = G3 * G2
-    print("TEST:")
-    print("E1:", E1)
-    print("E2:", E2)
+    # print("A=", A, "\nB=", B[j], "\nC=", C, "\nT=", T, "\nTEST:", "\nE1:", E1, "\nE2:", E2)
     # Test verification
     if E1 == E2:
         return 1  # keywords match
