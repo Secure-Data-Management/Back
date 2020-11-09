@@ -41,6 +41,7 @@ def add_key(request):
             return HttpResponse("User already exists !")
         else:
             user_id = KEY_MANAGER.add_key(new_key, username)
+            #TODO: remove the user id, redundancy with username? (but requires to check for existant names)
             return HttpResponse(str(user_id))
 
 def get_key(request):
@@ -50,10 +51,11 @@ def get_key(request):
         return HttpResponse("No user specified")
     else:
         if username not in KEY_MANAGER.public_keys:
+            print(f"Request for key of {username}, but this user does not exist")
             return HttpResponse("This user does not exist")
         else:
-            key_string = KEY_MANAGER.get_key(username)
-            return HttpResponse(key_string)
+            user_id, key_string = KEY_MANAGER.get_key(username)
+            return HttpResponse(f"{user_id},{key_string}")
 
 # Views for /file/
 @csrf_exempt
@@ -61,12 +63,19 @@ def upload(request):
     """Receives an encrypted file (with encrypted index) and adds it to the database"""
     body = request.body.decode("ascii")
     message_dict = json.loads(body)
-
+    # bind each element of B to a user_id using a dict ?
+    B_list = message_dict["B"].copy()
+    print(message_dict)
+    message_dict["B"] = {}
+    for i,b in enumerate(B_list):
+        user_id = message_dict["id_list"][i]
+        message_dict["B"][user_id] = b
     n_files = len(os.listdir(MEDIA_ROOT))
-    print(f"There are {n_files} on the server")
     new_filename = f"{MEDIA_ROOT}file_{n_files + 1}.json"
+    print(message_dict)
     with open(new_filename, 'w') as outfile:
         json.dump(message_dict, outfile)
+    print(f"File uploaded, there are {n_files + 1} on the server")
 
     return HttpResponse("File uploaded !")
 
@@ -76,9 +85,10 @@ def search(request):
     """Receives a trapdoor in the request and performs a search in all the files, replies with a list of matching ciphertexts (encoded with base64)"""
     body = request.body.decode("ascii")
     # HACK: Use json to obtain list, does only work if string delimiters in the list are double quotes
-    trapdoor_list = json.loads(body)
+    request_dict = json.loads(body)
+    trapdoor_list = request_dict["trapdoor"]
+    user_id = str(request_dict["id"])
     # TODO: fix user id, using a dict...
-    user_id = 0
     list_files = os.listdir(MEDIA_ROOT)
     list_results = []
     for file_to_test in list_files:
@@ -87,7 +97,14 @@ def search(request):
             # Test(_A: Element, _B: List[Element], _C: List[Element], T: List[Union[int, Element]], j: int, genkey: KeyManager):
             test_result = Test(ciphertext_dict["A"], ciphertext_dict["B"], ciphertext_dict["C"], trapdoor_list, user_id, KEY_MANAGER)
             print(file_to_test, test_result)
-            if test_result:
+            if test_result == 1:
                 # add the ciphertext to the list that should be sent back
-                list_results.append(ciphertext_dict["E"])
-    return HttpResponse(str(list_results))
+                result = {}
+                result["E"] = ciphertext_dict["E"]
+                result["A"] = ciphertext_dict["A"]
+                result["B"] = ciphertext_dict["B"][user_id]
+                list_results.append(result)
+
+    #the response is a JSON list of elements, each one containing E, A and bj
+    response = json.dumps(list_results)
+    return HttpResponse(response)
