@@ -42,6 +42,7 @@ def add_key(request):
         else:
             user_id = KEY_MANAGER.add_key(new_key, username)
             #TODO: remove the user id, redundancy with username? (but requires to check for existant names)
+            print("Sent user id", user_id)
             return HttpResponse(str(user_id))
 
 def get_key(request):
@@ -55,7 +56,23 @@ def get_key(request):
             return HttpResponse("This user does not exist")
         else:
             user_id, key_string = KEY_MANAGER.get_key(username)
+            print(f"Sent key of {user_id}: {key_string}")
             return HttpResponse(f"{user_id},{key_string}")
+
+def get_users(request):
+    """Returns the list of usernames, ids and keys..."""
+    list_usernames = KEY_MANAGER.public_keys.keys()
+    response = []
+    for user_name in list_usernames:
+        user_id, key_string = KEY_MANAGER.get_key(user_name)
+        user = {}
+        user["id"] = user_id
+        user["name"] = user_name
+        user["key"] = key_string
+        response.append(user)
+    response_json = json.dumps(response)
+    return HttpResponse(response_json)
+
 
 # Views for /file/
 @csrf_exempt
@@ -70,6 +87,7 @@ def upload(request):
     for i,b in enumerate(B_list):
         user_id = message_dict["id_list"][i]
         message_dict["B"][user_id] = b
+    del message_dict["id_list"]
     n_files = len(os.listdir(MEDIA_ROOT))
     new_filename = f"{MEDIA_ROOT}file_{n_files + 1}.json"
     print(message_dict)

@@ -21,7 +21,9 @@ class KeyManager():
         #HACK: consultant is considered to be user_id = 0 since he is the first to be created. His name is consultant
         #TODO: create consultant key in the KeyManager itself?
 
-        #empty the database
+        #COMMENT THIS LINE TO AVOID CLEANING THE DATABASE ON RESTART
+        open("accounts.csv", "w").close()
+
         with open('accounts.csv', newline='') as csvfile:
             reader = csv.reader(csvfile, delimiter=',')
             for row in reader:

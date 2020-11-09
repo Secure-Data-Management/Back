@@ -9,6 +9,7 @@ urlpatterns = [
     path('keys/get_generator', views.get_generator, name='get_generator'),
     path('keys/add_key', views.add_key, name='add_key'),
     path('keys/get_key', views.get_key, name='get_key'),
+    path('keys/get_users', views.get_users, name='get_users'),
     path('file/upload', views.upload, name='upload'),
     path('search', views.search, name="search")
 ]

@@ -15,7 +15,7 @@ def Test(_A, _B, _C, T, user_id, genkey: KeyManager):
     #if there is no B for this user, the file has not been encrypted for this user
     # then return 0
     if user_id not in B:
-        return 0
+        return -1
     else:
         C = [Element(genkey.pairing, G1, value=el) for el in _C]  # l total crypted keywords (h^r)(f^s)
         for i in range(3):
@@ -29,7 +29,7 @@ def Test(_A, _B, _C, T, user_id, genkey: KeyManager):
         G3: Element = genkey.e(A, T[1])
         G2: Element = genkey.e(B[user_id], T[2])
         E2: Element = G3 * G2
-        # print("A=", A, "\nB=", B[j], "\nC=", C, "\nT=", T, "\nTEST:", "\nE1:", E1, "\nE2:", E2)
+        # print("A=", A, "\nB=", B[user_id], "\nC=", C, "\nT=", T, "\nTEST:", "\nE1:", E1, "\nE2:", E2)
         # Test verification
         if E1 == E2:
             return 1  # keywords match
