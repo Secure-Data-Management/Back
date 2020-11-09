@@ -11,7 +11,7 @@ class KeyManager():
         # self.params: Parameters = Parameters(qbits=512, rbits=160)
         self.params: Parameters = Parameters(param_string=params_string)
         self.pairing: Pairing = Pairing(self.params)
-        string_g = "03138C4D4FFBF34E2338783FF4968933C015AC8F34496A4BE5697D5C4BDE9F78B3E21306F3B4938C40571C9B9EDDE050DB8CE526FF1B8099E8DE790A8962E9443E"
+        string_g = "032F098B7A139CD885793702C3D8A03859A2B6D35643C9D3971DA924CD7CD65AE7E8FE9AC1B5A287B825E1B960D2F7005DD5E6D86DD9AB96608AE6E8F790471A88"
         self.g : Element = Element(self.pairing, G1, value=string_g)
         self.e: Callable[[Element, Element], Element] = lambda e1, e2: self.pairing.apply(e1, e2)
         # public key dict
