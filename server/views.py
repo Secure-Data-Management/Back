@@ -82,7 +82,6 @@ def upload(request):
     message_dict = json.loads(body)
     # bind each element of B to a user_id using a dict ?
     B_list = message_dict["B"].copy()
-    print(message_dict)
     message_dict["B"] = {}
     for i,b in enumerate(B_list):
         user_id = message_dict["id_list"][i]
