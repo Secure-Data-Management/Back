@@ -1,4 +1,6 @@
 import csv
+import os
+from pathlib import Path
 from typing import Union, Tuple, List, Callable, Any, Dict
 
 from pypbc import Parameters, Pairing, Element, G1, G2
@@ -16,7 +18,8 @@ class KeyManager():
         self.users: Dict[str, int] = {}
         self.public_keys: Dict[str, Element] = {}
         self.public_keys_string: Dict[str, str] = {}
-
+        filename = Path('accounts.csv')
+        filename.touch(exist_ok=True)
         with open('accounts.csv', newline='') as csvfile:
             reader = csv.reader(csvfile, delimiter=',')
             for row in reader:
