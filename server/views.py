@@ -2,7 +2,7 @@ import json
 import os
 from django.shortcuts import render
 from django.http import HttpResponse
-from server.global_variables import KEY_MANAGER
+from server.global_variables import KEY_MANAGER, PARAMS, G
 from django.views.decorators.csrf import csrf_exempt
 from backend_project.settings import MEDIA_ROOT
 from server.mpeck_test import Test
@@ -15,15 +15,12 @@ def home(request):
 
 # Views for /keys/
 def get_params(request):
-    params_string = KEY_MANAGER.get_parameters()
-    return (HttpResponse(params_string))
+    return HttpResponse(PARAMS)
 
 
 def get_generator(request):
     """Returns the generator g as a string"""
-    g_string = KEY_MANAGER.get_g()
-    print("sending g: ", KEY_MANAGER.g)
-    return HttpResponse(g_string)
+    return HttpResponse(G)
 
 
 def add_key(request):
@@ -41,9 +38,10 @@ def add_key(request):
             return HttpResponse("User already exists !")
         else:
             user_id = KEY_MANAGER.add_key(new_key, username)
-            #TODO: remove the user id, redundancy with username? (but requires to check for existant names)
+            # TODO: remove the user id, redundancy with username? (but requires to check for existant names)
             print("Sent user id", user_id)
             return HttpResponse(str(user_id))
+
 
 def get_key(request):
     """Receives a username in get paramater and returns his public key (if user exists)"""
@@ -58,6 +56,7 @@ def get_key(request):
             user_id, key_string = KEY_MANAGER.get_key(username)
             print(f"Sent key of {user_id}: {key_string}")
             return HttpResponse(f"{user_id},{key_string}")
+
 
 def get_users(request):
     """Returns the list of usernames, ids and keys..."""
@@ -83,7 +82,7 @@ def upload(request):
     # bind each element of B to a user_id using a dict ?
     B_list = message_dict["B"].copy()
     message_dict["B"] = {}
-    for i,b in enumerate(B_list):
+    for i, b in enumerate(B_list):
         user_id = message_dict["id_list"][i]
         message_dict["B"][user_id] = b
     del message_dict["id_list"]
@@ -122,6 +121,6 @@ def search(request):
                 result["B"] = ciphertext_dict["B"][user_id]
                 list_results.append(result)
 
-    #the response is a JSON list of elements, each one containing E, A and bj
+    # the response is a JSON list of elements, each one containing E, A and bj
     response = json.dumps(list_results)
     return HttpResponse(response)

@@ -5,23 +5,21 @@ from pypbc import Parameters, Pairing, Element, G1, G2
 
 
 class KeyManager():
-    def __init__(self):
-        #initiate the parameters
-        params_string = "type a q 5190226450145940880746663486308966347220639714045250223182499121249068575513554544422970314418344770379996438351407014419358038003225732626831022128438331 h 7102594095788614028758769623913839942835962504311385389572759256033849452424444030966227463924769974838212 r 730750818665452757176057050065048642452048576511 exp2 159 exp1 110 sign1 1 sign0 -1 "
+    def __init__(self, params_string: str, string_g: str):
+        # initiate the parameters
         # self.params: Parameters = Parameters(qbits=512, rbits=160)
         self.params: Parameters = Parameters(param_string=params_string)
         self.pairing: Pairing = Pairing(self.params)
-        string_g = "032F098B7A139CD885793702C3D8A03859A2B6D35643C9D3971DA924CD7CD65AE7E8FE9AC1B5A287B825E1B960D2F7005DD5E6D86DD9AB96608AE6E8F790471A88"
-        self.g : Element = Element(self.pairing, G1, value=string_g)
+        self.g: Element = Element(self.pairing, G1, value=string_g)
         self.e: Callable[[Element, Element], Element] = lambda e1, e2: self.pairing.apply(e1, e2)
         # public key dict
-        self.user_id = {}
-        self.public_keys : Dict[Element] = {}
+        self.user_id: Dict[str, int] = {}
+        self.public_keys: Dict[str, Element] = {}
 
-        #HACK: consultant is considered to be user_id = 0 since he is the first to be created. His name is consultant
-        #TODO: create consultant key in the KeyManager itself?
+        # HACK: consultant is considered to be user_id = 0 since he is the first to be created. His name is consultant
+        # TODO: create consultant key in the KeyManager itself?
 
-        #COMMENT THIS LINE TO AVOID CLEANING THE DATABASE ON RESTART
+        # COMMENT THIS LINE TO AVOID CLEANING THE DATABASE ON RESTART
         open("accounts.csv", "w").close()
 
         with open('accounts.csv', newline='') as csvfile:
@@ -37,7 +35,6 @@ class KeyManager():
         print("KeyManager started, current keys are")
         for username in self.public_keys:
             print(f"\t{username}: {str(self.public_keys[username])}")
-
 
     def add_key(self, key_string, username):
         """Takes a key as a string and a username and adds it to the keys"""
@@ -65,16 +62,3 @@ class KeyManager():
     def get_g(self):
         """Returns the value of generator g as a string"""
         return str(self.g)
-
-
-
-if __name__ == "__main__":
-    manager = KeyManager()
-    key = Element.random(manager.pairing, G1)
-    key_str = str(key)
-    print(key_str)
-    user_id = manager.add_key(key_str, "test")
-    key2_str = manager.get_key(user_id)
-    key2 = Element(manager.pairing, G1, value=key2_str)
-    assert key == key2, "The key storage was successful"
-    print(manager.get_parameters())

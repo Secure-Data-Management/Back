@@ -5,17 +5,14 @@ from typing import List, Union
 
 
 def Test(_A, _B, _C, T, user_id, genkey: KeyManager):
-    #  S = [A, B, C]
-    # convert A, B, C and T[:3] to Elements
     A = Element(genkey.pairing, G1, value=_A)  # g^r
     B = {}
     for id_key in _B:
         B[id_key] = Element(genkey.pairing, G1, value=_B[id_key])
 
-    #if there is no B for this user, the file has not been encrypted for this user
-    # then return 0
+    # if there is no B for this user, the file has not been encrypted for this user
     if user_id not in B:
-        return -1
+        return False
     else:
         C = [Element(genkey.pairing, G1, value=el) for el in _C]  # l total crypted keywords (h^r)(f^s)
         for i in range(3):
@@ -29,9 +26,4 @@ def Test(_A, _B, _C, T, user_id, genkey: KeyManager):
         G3: Element = genkey.e(A, T[1])
         G2: Element = genkey.e(B[user_id], T[2])
         E2: Element = G3 * G2
-        # print("A=", A, "\nB=", B[user_id], "\nC=", C, "\nT=", T, "\nTEST:", "\nE1:", E1, "\nE2:", E2)
-        # Test verification
-        if E1 == E2:
-            return 1  # keywords match
-        else:
-            return 0  # keywords don't match
+        return E1 == E2
