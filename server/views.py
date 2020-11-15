@@ -37,10 +37,13 @@ def add_key(request):
         if username in KEY_MANAGER.public_keys:
             return HttpResponse("User already exists !")
         else:
-            user_id = KEY_MANAGER.add_key(new_key, username)
-            # TODO: remove the user id, redundancy with username? (but requires to check for existant names)
-            print("Sent user id", user_id)
-            return HttpResponse(str(user_id))
+            if username not in KEY_MANAGER.users:
+                user_id = KEY_MANAGER.add_key(new_key, username)
+                print("Sent user id", user_id)
+                return HttpResponse(str(user_id))
+            else:
+                return HttpResponse(str(-1))
+
 
 
 def get_key(request):

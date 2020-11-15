@@ -13,7 +13,7 @@ class KeyManager():
         self.g: Element = Element(self.pairing, G1, value=string_g)
         self.e: Callable[[Element, Element], Element] = lambda e1, e2: self.pairing.apply(e1, e2)
         # public key dict
-        self.user_id: Dict[str, int] = {}
+        self.users: Dict[str, int] = {}
         self.public_keys: Dict[str, Element] = {}
 
         # HACK: consultant is considered to be user_id = 0 since he is the first to be created. His name is consultant
@@ -30,7 +30,7 @@ class KeyManager():
                 key_element = Element(self.pairing, G1, value=key_string)
                 self.public_keys[username] = key_element
                 user_id = len(self.public_keys) - 1
-                self.user_id[username] = user_id
+                self.users[username] = user_id
 
         print("KeyManager started, current keys are")
         for username in self.public_keys:
@@ -41,7 +41,7 @@ class KeyManager():
         key_element = Element(self.pairing, G1, value=key_string)
         self.public_keys[username] = key_element
         user_id = len(self.public_keys) - 1
-        self.user_id[username] = user_id
+        self.users[username] = user_id
         with open("accounts.csv", "a+") as f:
             line = f"{user_id},{username},{key_string}\n"
             f.write(line)
@@ -50,8 +50,8 @@ class KeyManager():
     def get_key(self, username):
         """Returns (user_id, key) of user with name=username as a string"""
         # assert user_id >= 0 and user_id < len(self.public_keys), f"Invalid id in get_key {user_id}"
-        if username in self.user_id:
-            user_id = self.user_id[username]
+        if username in self.users:
+            user_id = self.users[username]
             key = str(self.public_keys[username])
             return (user_id, key)
 
