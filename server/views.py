@@ -128,9 +128,9 @@ def upload(request):
 def search(request):
     """Receives a trapdoor in the request and performs a search in all the files, replies with a list of matching ciphertexts (encoded with base64)"""
     body = request.body.decode("ascii")
-    # HACK: Use json to obtain list, does only work if string delimiters in the list are double quotes
     request_dict = json.loads(body)
     trapdoor_list = request_dict["trapdoor"]
+    index_list = request_dict["index_list"]
     user_id = str(request_dict["id"])
     # TODO: fix user id, using a dict...
     list_files = [file for file in os.listdir(MEDIA_ROOT) if not file.startswith(".")]
@@ -139,7 +139,7 @@ def search(request):
         with open(MEDIA_ROOT + file_to_test, "r") as file_in:
             ciphertext_dict = json.load(file_in)
             # Test(_A: Element, _B: List[Element], _C: List[Element], T: List[Union[int, Element]], j: int, genkey: KeyManager):
-            test_result = Test(ciphertext_dict["A"], ciphertext_dict["B"], ciphertext_dict["C"], trapdoor_list, user_id, KEY_MANAGER)
+            test_result = Test(ciphertext_dict["A"], ciphertext_dict["B"], ciphertext_dict["C"], trapdoor_list,index_list, user_id, KEY_MANAGER)
             print(file_to_test, test_result)
             if test_result == 1:
                 # add the ciphertext to the list that should be sent back

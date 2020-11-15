@@ -1,10 +1,10 @@
+from typing import List
+
 from pypbc import Element, G1
-# from server.keys.KeyManager import KeyManager
 from server.keys.KeyManager import KeyManager
-from typing import List, Union
 
 
-def Test(_A, _B, _C, T, user_id, genkey: KeyManager):
+def Test(_A, _B, _C, T, I: List[int], user_id, genkey: KeyManager):
     A = Element(genkey.pairing, G1, value=_A)  # g^r
     B = {}
     for id_key in _B:
@@ -17,7 +17,7 @@ def Test(_A, _B, _C, T, user_id, genkey: KeyManager):
         C = [Element(genkey.pairing, G1, value=el) for el in _C]  # l total crypted keywords (h^r)(f^s)
         for i in range(3):
             T[i] = Element(genkey.pairing, G1, value=T[i])
-        I: List[int] = T[3:]  # m indexes of keywords from the query
+
         # Intermediate computation
         keywords_product: Element = Element.one(genkey.pairing, G1)
         for i in I:
