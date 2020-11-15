@@ -62,5 +62,5 @@ class KeyManager():
         """Returns the value of generator g as a string"""
         return str(self.g)
 
-    def get_key_from_str_G1(self,key:str):
+    def get_key_from_str_G1(self, key: str):
         return Element(self.pairing, G1, value=key)
