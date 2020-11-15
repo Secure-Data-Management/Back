@@ -2,6 +2,8 @@ import json
 import os
 from django.shortcuts import render
 from django.http import HttpResponse
+from pypbc import Element
+
 from server.global_variables import KEY_MANAGER, PARAMS, G
 from django.views.decorators.csrf import csrf_exempt
 from backend_project.settings import MEDIA_ROOT
@@ -32,18 +34,36 @@ def add_key(request):
         return HttpResponse("No key sent")
     else:
         if username == "":
-            n_users = len(KEY_MANAGER.public_keys)
-            username = f"user_{n_users}"
-        print(f"Received key: {new_key}, from user={username}")
+            return HttpResponse("Username was not defined !")
+        if new_key in KEY_MANAGER.public_keys.values():
+            return HttpResponse("The key already exists ! Are you trying to spoof yourself ?")
         if username in KEY_MANAGER.public_keys:
             return HttpResponse("User already exists !")
         else:
             if username not in KEY_MANAGER.users:
                 user_id = KEY_MANAGER.add_key(new_key, username)
-                print("Sent user id", user_id)
                 return HttpResponse(str(user_id))
             else:
                 return HttpResponse(str(-1))
+
+
+def get_username(request):
+    """Receive a public key and return the associated username"""
+    key_string = request.GET.get("key", "")
+    if key_string == "":
+        return HttpResponse("No key specified")
+    else:
+        # check the key belong to the group first
+        try:
+            KEY_MANAGER.get_key_from_str_G1(key_string)
+        except Exception as e:
+            return HttpResponse(e)
+        if key_string not in KEY_MANAGER.public_keys_string.values():
+            return HttpResponse("No key exist on the server like that one, please register first")
+        l = [k for (k, v) in KEY_MANAGER.public_keys_string.items() if v == key_string]
+        if len(l) != 1:
+            return HttpResponse("The server can not decide which username to send out, something is wrong !")
+        return HttpResponse(str(l[0]))
 
 
 def get_key(request):

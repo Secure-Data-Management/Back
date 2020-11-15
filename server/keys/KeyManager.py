@@ -15,12 +15,7 @@ class KeyManager():
         # public key dict
         self.users: Dict[str, int] = {}
         self.public_keys: Dict[str, Element] = {}
-
-        # HACK: consultant is considered to be user_id = 0 since he is the first to be created. His name is consultant
-        # TODO: create consultant key in the KeyManager itself?
-
-        # COMMENT THIS LINE TO AVOID CLEANING THE DATABASE ON RESTART
-        open("accounts.csv", "w").close()
+        self.public_keys_string: Dict[str, str] = {}
 
         with open('accounts.csv', newline='') as csvfile:
             reader = csv.reader(csvfile, delimiter=',')
@@ -29,6 +24,7 @@ class KeyManager():
                 key_string = row[2]
                 key_element = Element(self.pairing, G1, value=key_string)
                 self.public_keys[username] = key_element
+                self.public_keys_string[username] = str(key_element)
                 user_id = len(self.public_keys) - 1
                 self.users[username] = user_id
 
@@ -62,3 +58,6 @@ class KeyManager():
     def get_g(self):
         """Returns the value of generator g as a string"""
         return str(self.g)
+
+    def get_key_from_str_G1(self,key:str):
+        return Element(self.pairing, G1, value=key)

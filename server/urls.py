@@ -10,6 +10,7 @@ urlpatterns = [
     path('keys/add_key', views.add_key, name='add_key'),
     path('keys/get_key', views.get_key, name='get_key'),
     path('keys/get_users', views.get_users, name='get_users'),
+    path('keys/get_username', views.get_username, name='get_username'),
     path('file/upload', views.upload, name='upload'),
     path('search', views.search, name="search")
 ]
