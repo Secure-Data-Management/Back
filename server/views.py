@@ -50,24 +50,26 @@ def add_key(request):
 def get_username(request):
     """Receive a public key and return the associated username"""
     key_string = request.GET.get("key", "")
+    print(key_string)
     if key_string == "":
-        return HttpResponse("-1,No key specified")
+        return HttpResponse("-1;No key specified")
     else:
         # check the key belong to the group first
+       
         try:
             KEY_MANAGER.get_key_from_str_G1(key_string)
         except Exception as e:
-            return HttpResponse(f'-1,{e}')
+            return HttpResponse(f'-1;{e}')
         if key_string not in KEY_MANAGER.public_keys_string.values():
-            return HttpResponse("-1,No key exist on the server like that one, please register first")
+            return HttpResponse("-1;No key exist on the server like that one, please register first")
         username_list = [k for (k, v) in KEY_MANAGER.public_keys_string.items() if v == key_string]
         if len(username_list) != 1:
-            return HttpResponse("-1,The server can not decide which username to send out, something is wrong !")
+            return HttpResponse("-1;The server can not decide which username to send out, something is wrong !")
         username = username_list[0]
         if username in KEY_MANAGER.users:
-            return HttpResponse(f"{str(KEY_MANAGER.users[username])},{str(username)}")
+            return HttpResponse(f"{str(KEY_MANAGER.users[username])};{str(username)}")
         else:
-            return HttpResponse(f"-1,user id does not exist for {username}")
+            return HttpResponse(f"-1;user id does not exist for {username}")
 
 
 
