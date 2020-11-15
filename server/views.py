@@ -10,7 +10,7 @@ from server.mpeck_test import Test
 
 # Create your views here.
 def home(request):
-    return HttpResponse("Test, 123")
+    return HttpResponse("Pong !")
 
 
 # Views for /keys/
