@@ -55,7 +55,7 @@ def get_username(request):
         return HttpResponse("-1;No key specified")
     else:
         # check the key belong to the group first
-       
+
         try:
             KEY_MANAGER.get_key_from_str_G1(key_string)
         except Exception as e:
@@ -70,7 +70,6 @@ def get_username(request):
             return HttpResponse(f"{str(KEY_MANAGER.users[username])};{str(username)}")
         else:
             return HttpResponse(f"-1;user id does not exist for {username}")
-
 
 
 def get_key(request):
@@ -116,14 +115,13 @@ def upload(request):
         user_id = message_dict["id_list"][i]
         message_dict["B"][user_id] = b
     del message_dict["id_list"]
-    n_files = len(os.listdir(MEDIA_ROOT))
-    new_filename = f"{MEDIA_ROOT}file_{n_files + 1}.json"
-    print(message_dict)
+    n_files = len([file for file in os.listdir(MEDIA_ROOT) if not file.startswith(".")])
+    new_filename = f"{MEDIA_ROOT}file_{n_files+1}.json"
     with open(new_filename, 'w') as outfile:
         json.dump(message_dict, outfile)
-    print(f"File uploaded, there are {n_files + 1} on the server")
+    print(f"File uploaded, there are {n_files+1} on the server")
 
-    return HttpResponse("File uploaded !")
+    return HttpResponse("Your file has been successfully uploaded !")
 
 
 @csrf_exempt
@@ -135,8 +133,7 @@ def search(request):
     trapdoor_list = request_dict["trapdoor"]
     user_id = str(request_dict["id"])
     # TODO: fix user id, using a dict...
-    list_files = os.listdir(MEDIA_ROOT)
-    list_files = [file for file in list_files if not file.startswith(".")]
+    list_files = [file for file in os.listdir(MEDIA_ROOT) if not file.startswith(".")]
     list_results = []
     for file_to_test in list_files:
         with open(MEDIA_ROOT + file_to_test, "r") as file_in:
