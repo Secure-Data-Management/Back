@@ -10,7 +10,8 @@ from server.mpeck_test import Test
 
 # Create your views here.
 def home(request):
-    return HttpResponse("Pong !")
+    # TODO banner
+    return HttpResponse("mPECK server")
 
 
 # Views for /keys/
@@ -43,7 +44,6 @@ def add_key(request):
                 return HttpResponse(str(user_id))
             else:
                 return HttpResponse(str(-1))
-
 
 
 def get_key(request):
@@ -109,6 +109,7 @@ def search(request):
     user_id = str(request_dict["id"])
     # TODO: fix user id, using a dict...
     list_files = os.listdir(MEDIA_ROOT)
+    list_files = [file for file in list_files if not file.startswith(".")]
     list_results = []
     for file_to_test in list_files:
         with open(MEDIA_ROOT + file_to_test, "r") as file_in:
