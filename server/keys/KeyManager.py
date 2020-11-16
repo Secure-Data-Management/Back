@@ -39,6 +39,7 @@ class KeyManager():
         """Takes a key as a string and a username and adds it to the keys"""
         key_element = Element(self.pairing, G1, value=key_string)
         self.public_keys[username] = key_element
+        self.public_keys_string[username] = key_string
         user_id = len(self.public_keys) - 1
         self.users[username] = user_id
         with open("accounts.csv", "a+") as f:

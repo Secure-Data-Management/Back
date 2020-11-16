@@ -12,7 +12,6 @@ from server.mpeck_test import Test
 
 # Create your views here.
 def home(request):
-    # TODO banner
     return HttpResponse("mPECK server")
 
 
