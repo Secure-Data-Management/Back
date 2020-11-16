@@ -35,6 +35,8 @@ def add_key(request):
     else:
         if username == "":
             return HttpResponse("Username was not defined !")
+        if 'consultant' not in KEY_MANAGER.public_keys:
+            return HttpResponse("No consultant was registered before !")
         if new_key in KEY_MANAGER.public_keys_string.values():
             return HttpResponse("The key already exists ! Are you trying to spoof yourself ?")
         if username in KEY_MANAGER.public_keys:
@@ -50,12 +52,10 @@ def add_key(request):
 def get_username(request):
     """Receive a public key and return the associated username"""
     key_string = request.GET.get("key", "")
-    print(key_string)
     if key_string == "":
         return HttpResponse("-1;No key specified")
     else:
         # check the key belong to the group first
-
         try:
             KEY_MANAGER.get_key_from_str_G1(key_string)
         except Exception as e:
